@@ -85,7 +85,7 @@ export default function About() {
 
           <div className="about-text opacity-0 translate-y-[50px] mt-10 max-w-md space-y-6 text-base leading-relaxed text-black/70 md:text-lg">
             <p>
-              I&apos;m a passionate <strong className="text-black font-bold">Graphics Designer</strong> and <strong className="text-black font-bold">CSE Graduate</strong>. I believe that great products are born at the intersection of beautiful design and clean code.
+              I&apos;m a passionate <strong className="text-black font-bold">Graphics Designer</strong> and <strong className="text-black font-bold">Computer Science Graduate</strong>. I believe that great products are born at the intersection of beautiful design and clean code.
             </p>
             <p>
               With expertise in both visual communication and software development, I bring a unique perspective to every project — whether it&apos;s crafting a brand identity or building a full-stack application.
