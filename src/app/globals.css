@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #ededed;
+  --bg-dark: #0a0a0a;
+  --black: #000000;
+  --white: #ffffff;
+  --orange: #f5a623;
+  --teal: #76c7c0;
+  --grey: #888888;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-dark: var(--bg-dark);
+  --color-black: var(--black);
+  --color-white: var(--white);
+  --color-orange: var(--orange);
+  --color-teal: var(--teal);
+  --color-grey: var(--grey);
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-inter);
+  --font-serif: var(--font-playfair);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  scroll-behavior: auto !important;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--black);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Ensure typography remains razor-sharp and never grainy/blurry during hardware-accelerated transforms */
+h1, h2, h3, h4, h5, h6, p, span, a, li, button {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hide scrollbar for Chrome, Safari, Edge and Opera */
+::-webkit-scrollbar {
+  display: none;
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+.font-display {
+  font-family: var(--font-inter), sans-serif !important;
+  letter-spacing: -0.04em;
+}
+
+.font-serif {
+  font-family: var(--font-playfair), serif !important;
+}
+
+.text-orange {
+  color: var(--orange);
+}
+
+.text-teal {
+  color: var(--teal);
+}
+
+.text-grey {
+  color: var(--grey);
+}
+
+@keyframes neon-flicker {
+  0%, 0.5%, 1.2%, 1.8%, 2.5%, 3.5%, 4%, 100% {
+    color: #fff;
+    text-shadow:
+      0 0 2px #fff,
+      0 0 4px #fff,
+      0 0 10px var(--orange),
+      0 0 20px var(--orange),
+      0 0 30px var(--orange),
+      0 0 40px var(--orange),
+      0 0 50px var(--orange);
+    opacity: 1;
+  }
+  0.6%, 1.1%, 1.9%, 2.4%, 3.6%, 3.9% {
+    color: rgba(255, 255, 255, 0.5);
+    text-shadow:
+      0 0 2px rgba(255, 255, 255, 0.2),
+      0 0 5px rgba(245, 166, 35, 0.2);
+    opacity: 0.8;
+  }
+}
+
+.neon-text {
+  /* 10s duration: flickers for the first 0.4s, then stays solidly lit for 9.6s */
+  animation: neon-flicker 10s infinite;
+}
+
+
+@keyframes scroll {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
