@@ -1,30 +1,42 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { awards } from "@/lib/projects";
+import styles from "./Awards.module.css";
 
-function LaurelBranch({ className, flipped }: { className?: string; flipped?: boolean }) {
+function AwardAccent({ mirrored = false }: { mirrored?: boolean }) {
+  const gradientId = mirrored ? "laurel-gold-right" : "laurel-gold-left";
   return (
-    <svg
-      viewBox="-10 -40 120 280"
-      fill="currentColor"
-      className={className}
-      style={{ transform: flipped ? 'scaleX(-1)' : 'none' }}
-    >
-      <path d="M80,230 C20,180 10,80 50,10" stroke="currentColor" strokeWidth="3" fill="none" strokeLinecap="round" />
-      <path d="M72,205 C50,200 40,180 35,160 C50,170 65,185 72,205 Z" />
-      <path d="M57,170 C35,165 20,145 15,120 C35,130 50,150 57,170 Z" />
-      <path d="M43,130 C25,120 10,100 5,75 C25,85 40,110 43,130 Z" />
-      <path d="M35,90 C15,80 5,60 0,35 C20,45 35,70 35,90 Z" />
-      <path d="M38,50 C20,40 10,20 10,0 C30,10 40,30 38,50 Z" />
-      <path d="M72,205 C90,180 100,155 95,130 C85,150 75,175 72,205 Z" />
-      <path d="M57,170 C80,145 90,120 85,90 C70,110 60,140 57,170 Z" />
-      <path d="M43,130 C70,105 80,80 75,50 C60,70 45,100 43,130 Z" />
-      <path d="M35,90 C60,65 70,40 65,15 C50,35 40,65 35,90 Z" />
-      <path d="M50,10 C45,-10 55,-25 65,-30 C65,-15 60,0 50,10 Z" />
-    </svg>
+    <span className={`${styles.accent} ${mirrored ? styles.mirrored : ""}`} aria-hidden="true">
+      <svg className={styles.branch} viewBox="0 0 100 200" fill="none">
+        <defs>
+          <linearGradient id={gradientId} x1="25" y1="185" x2="65" y2="10" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#c78e48" />
+            <stop offset=".5" stopColor="#eab66f" />
+            <stop offset="1" stopColor="#f4d69f" />
+          </linearGradient>
+        </defs>
+        <g fill={`url(#${gradientId})`}>
+          <path d="M59 175C40 173 30 162 29 149C43 155 52 163 59 175Z" />
+          <path d="M59 175C54 159 58 145 70 135C72 150 68 164 59 175Z" />
+          <path d="M46 152C28 148 18 134 18 122C32 130 41 140 46 152Z" />
+          <path d="M46 152C44 134 49 121 60 113C62 129 56 143 46 152Z" />
+          <path d="M36 127C17 119 10 104 12 91C25 101 32 114 36 127Z" />
+          <path d="M36 127C35 109 42 96 53 90C52 105 46 119 36 127Z" />
+          <path d="M31 101C14 92 9 77 13 64C24 76 29 88 31 101Z" />
+          <path d="M31 101C32 84 41 72 53 68C50 83 43 95 31 101Z" />
+          <path d="M33 75C18 62 17 46 23 35C31 48 34 62 33 75Z" />
+          <path d="M33 75C38 59 49 51 61 50C55 64 46 72 33 75Z" />
+          <path d="M39 50C31 37 31 22 38 13C44 27 44 41 39 50Z" />
+          <path d="M39 50C45 37 58 31 68 32C61 44 51 49 39 50Z" />
+          <path d="M48 26C45 14 50 5 60 1C62 13 55 22 48 26Z" />
+        </g>
+        <path d="M68 188C32 150 19 87 49 24" stroke={`url(#${gradientId})`} strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    </span>
   );
 }
 
@@ -79,36 +91,17 @@ export default function Awards() {
       ref={sectionRef}
       className="relative min-h-screen px-6 pt-16 pb-32 md:px-12 md:pt-20 lg:px-20"
     >
-      {/* Ambient Glowing Orbs Background (GPU accelerated to eliminate scroll lag) */}
-      <div
-        className="pointer-events-none absolute inset-0 z-0 overflow-hidden transform-gpu"
-        style={{
-          maskImage: "linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)",
-          WebkitMaskImage: "linear-gradient(to bottom, transparent, black 20%, black 80%, transparent)",
-          transform: "translateZ(0)",
-          willChange: "transform"
-        }}
-      >
-        {/* Top-Left: Angled, elongated glow */}
-        <div className="absolute -left-[10%] -top-[20%] h-[800px] w-[400px] rotate-[45deg] rounded-full bg-orange/30 blur-[100px] transform-gpu" />
-        {/* Bottom-Left: Wide, flattened glow */}
-        <div className="absolute -bottom-[15%] -left-[5%] h-[300px] w-[500px] rotate-[-15deg] rounded-full bg-orange/20 blur-[90px] transform-gpu" />
-        {/* Top-Right: Huge, soft wash */}
-        <div className="absolute -right-[15%] -top-[15%] h-[700px] w-[600px] rotate-[-30deg] rounded-full bg-orange/20 blur-[100px] transform-gpu" />
-        {/* Bottom-Right: Dimmer, round glow */}
-        <div className="absolute -bottom-[10%] -right-[5%] h-[400px] w-[400px] rounded-full bg-orange/15 blur-[90px] transform-gpu" />
-      </div>
+      <div className={styles.ambient} aria-hidden="true" />
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Heading */}
-        <div className="awards-heading opacity-0 translate-y-[60px] mb-16 flex flex-col items-center justify-center relative">
-          <div className="relative flex items-center gap-4 md:gap-8">
-            <LaurelBranch className="h-16 w-auto text-[#f2b366] md:h-24 relative z-10" />
-            <h2 className="text-5xl font-display font-semibold tracking-tighter text-white capitalize md:text-7xl lg:text-8xl relative z-10">
-              <span className="font-serif italic font-normal text-white/90 pr-2">My</span>
-              Awards
+        <div className="awards-heading section-heading opacity-0 translate-y-[60px] mb-12 relative">
+          <div className={styles.titleGroup}>
+            <AwardAccent />
+            <h2 className={`section-title ${styles.title} relative z-10`}>
+              <em>My</em>{" "}Awards
             </h2>
-            <LaurelBranch className="h-16 w-auto text-[#f2b366] md:h-24 relative z-10" flipped />
+            <AwardAccent mirrored />
           </div>
         </div>
 
@@ -127,34 +120,46 @@ export default function Awards() {
                       {award.title}
                     </h3>
                     <div className="mt-1 flex items-center gap-3 text-sm text-white/40">
-                      <span>{award.year}</span>
-                      <span className="h-1 w-1 rounded-full bg-white/20" />
+                      {award.year && <>
+                        <span>{award.year}</span>
+                        <span className="h-1 w-1 rounded-full bg-white/20" />
+                      </>}
                       <span>{award.category}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Right: two image placeholders */}
-                <div className="flex shrink-0 items-center gap-3 md:gap-4">
-                  {/* Certificate placeholder */}
-                  <div
+                <div className={`flex shrink-0 items-center gap-3 md:gap-4 ${award.id === "award-2" ? "w-[236px] md:w-[272px]" : ""}`}>
+                  {/* Keep the certificate inside the existing fixed-size box. */}
+                  <button
+                    type="button"
+                    disabled={!award.images[0]}
+                    aria-label={`View certificate: ${award.title}`}
                     className="group/img relative flex h-20 w-28 cursor-pointer flex-col items-center justify-center gap-1.5 overflow-hidden rounded-sm border border-white/10 bg-white/5 transition-all duration-300 hover:border-orange/40 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(245,166,35,0.2)] md:h-24 md:w-32"
                     onClick={() => award.images[0] && setSelectedImg(award.images[0])}
                   >
                     {award.images[0] && (
-                      <img src={award.images[0]} alt="Certificate" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover/img:scale-110" />
+                      <Image src={award.images[0]} alt={`${award.title} certificate`} fill sizes="(min-width: 768px) 128px, 112px" className={award.id === "award-2" ? "bg-white object-cover object-[center_60%]" : award.id === "award-4" ? "bg-white object-cover object-top" : award.id === "award-5" ? "bg-white object-cover" : "bg-white object-contain"} />
                     )}
-                  </div>
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] border border-transparent transition-colors duration-300 group-hover/img:border-orange/40"
+                    />
+                  </button>
 
                   {/* Crest / Trophy placeholder */}
+                  {award.id !== "award-2" && (
                   <div
                     className="group/img relative flex h-20 w-28 cursor-pointer flex-col items-center justify-center gap-1.5 overflow-hidden rounded-sm border border-white/10 bg-white/5 transition-all duration-300 hover:border-orange/40 hover:bg-white/10 hover:shadow-[0_0_20px_rgba(245,166,35,0.2)] md:h-24 md:w-32"
                     onClick={() => award.images[1] && setSelectedImg(award.images[1])}
                   >
                     {award.images[1] && (
-                      <img src={award.images[1]} alt="Award" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover/img:scale-110" />
+                      <Image src={award.images[1]} alt={`${award.title} award photo`} fill sizes="(min-width: 768px) 128px, 112px" className="object-cover transition-transform duration-500 group-hover/img:scale-110" />
                     )}
+                    <span aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 rounded-[inherit] border border-transparent transition-colors duration-300 group-hover/img:border-orange/40" />
                   </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -165,6 +170,10 @@ export default function Awards() {
       {selectedImg && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-md transition-all duration-300"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Certificate and award preview"
+          data-lenis-prevent
           onClick={() => setSelectedImg(null)}
         >
           <div
@@ -172,6 +181,8 @@ export default function Awards() {
             onClick={(e) => e.stopPropagation()}
           >
             <button
+              type="button"
+              aria-label="Close preview"
               className="absolute -top-14 right-0 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-orange hover:text-white"
               onClick={() => setSelectedImg(null)}
             >
@@ -182,7 +193,7 @@ export default function Awards() {
             <img
               src={selectedImg}
               alt="Enlarged Award"
-              className="max-h-[80vh] w-auto rounded-lg object-contain"
+              className="max-h-[80vh] max-w-full w-auto rounded-lg object-contain"
             />
           </div>
         </div>

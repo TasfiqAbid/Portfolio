@@ -30,6 +30,7 @@ export default function WorkCarousel() {
   const numElRef = useRef<HTMLElement | null>(null);
   const dotsRef = useRef<NodeListOf<HTMLElement> | null>(null);
   const activeIndexRef = useRef<number>(-1);
+  const requestRenderRef = useRef<() => void>(() => {});
 
   // Wheel accumulation & cooldown
   const wheelAccumulatorRef = useRef(0);
@@ -44,16 +45,27 @@ export default function WorkCarousel() {
       dotsRef.current = paginationRef.current.querySelectorAll(".dot");
     }
 
-    let animationFrameId: number;
-    let isVisible = true;
-    let needsRender = true;
+    let animationFrameId = 0;
+    let isVisible = false;
+    let previousTime = 0;
+    const focusValues = new Map<HTMLElement, number>();
+    const requestRender = () => {
+      if (isVisible && !document.hidden && !animationFrameId) {
+        animationFrameId = requestAnimationFrame(update);
+      }
+    };
+    requestRenderRef.current = requestRender;
 
-    // Pause RAF when WorkCarousel is offscreen to preserve 100% CPU/GPU during page scroll
+    // Wake on entry; do not schedule frames while offscreen or settled.
     const observer = new IntersectionObserver(
       ([entry]) => {
         isVisible = entry.isIntersecting;
         if (isVisible) {
-          needsRender = true;
+          requestRender();
+        } else {
+          cancelAnimationFrame(animationFrameId);
+          animationFrameId = 0;
+          previousTime = 0;
         }
       },
       { rootMargin: "250px" }
@@ -63,22 +75,16 @@ export default function WorkCarousel() {
       observer.observe(stageRef.current);
     }
 
-    const update = () => {
-      animationFrameId = requestAnimationFrame(update);
-
-      if (!isVisible) return;
+    const update = (time: number) => {
+      animationFrameId = 0;
+      if (!isVisible || document.hidden) return;
+      const frameScale = previousTime ? Math.min(3, (time - previousTime) / (1000 / 60)) : 1;
+      previousTime = time;
 
       const diff = targetRef.current - progressRef.current;
       const isMoving = Math.abs(diff) >= 0.0002;
 
-      // Skip 32 heavy DOM style writes when carousel is stationary and not dragged
-      if (!isMoving && !isDragging.current && !needsRender) {
-        return;
-      }
-
-      needsRender = isMoving || isDragging.current;
-
-      const lerpSpeed = isDragging.current ? 0.22 : 0.12;
+      const lerpSpeed = 1 - Math.pow(1 - (isDragging.current ? 0.22 : 0.12), frameScale);
 
       if (Math.abs(diff) < 0.0002) {
         progressRef.current = targetRef.current;
@@ -118,8 +124,21 @@ export default function WorkCarousel() {
           // Fades smoothly from 1.0 to 0.0 between absOffset 1.8 and 3.2
           const opacity = Math.max(0, Math.min(1, 1 - Math.max(0, absOffset - 1.8) / 1.4));
 
+          // Invisible cards need no transforms, filters, reflection or compositing layer.
+          if (opacity === 0) {
+            card.style.visibility = "hidden";
+            card.style.willChange = "auto";
+            continue;
+          }
+          card.style.visibility = "visible";
+          card.style.willChange = isMoving ? "transform, opacity" : "auto";
           card.style.transform = `translate3d(${translateX}px, 0, ${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
-          card.style.setProperty("--focus", focusVar.toString());
+          // Keep the continuous geometry; quantize expensive paint effects only.
+          const paintFocus = Math.round(focusVar * 32) / 32;
+          if (focusValues.get(card) !== paintFocus) {
+            card.style.setProperty("--focus", paintFocus.toString());
+            focusValues.set(card, paintFocus);
+          }
           card.style.zIndex = Math.round(100 - absOffset * 10).toString();
           card.style.opacity = opacity.toString();
         }
@@ -150,17 +169,31 @@ export default function WorkCarousel() {
           });
         }
       }
+      if (isMoving) {
+        requestRender();
+      } else {
+        previousTime = 0;
+      }
     };
 
-    animationFrameId = requestAnimationFrame(update);
+    const handleVisibility = () => {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = 0;
+      previousTime = 0;
+      requestRender();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
     return () => {
       cancelAnimationFrame(animationFrameId);
       observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
+      requestRenderRef.current = () => {};
       if (wheelTimeoutRef.current) clearTimeout(wheelTimeoutRef.current);
     };
   }, []);
 
   const handleWheel = (e: React.WheelEvent) => {
+    requestRenderRef.current();
     const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
 
     if (isHorizontal) {
@@ -171,6 +204,7 @@ export default function WorkCarousel() {
       wheelTimeoutRef.current = setTimeout(() => {
         if (!isDragging.current) {
           targetRef.current = Math.round(targetRef.current);
+          requestRenderRef.current();
         }
       }, 150);
     } else {
@@ -194,6 +228,7 @@ export default function WorkCarousel() {
 
   const handlePointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0) return;
+    requestRenderRef.current();
     isDragging.current = true;
     hasDragged.current = false;
     startX.current = e.clientX;
@@ -217,6 +252,7 @@ export default function WorkCarousel() {
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging.current) return;
+    requestRenderRef.current();
 
     const deltaX = e.clientX - startX.current;
     const deltaY = e.clientY - startY.current;
@@ -249,6 +285,7 @@ export default function WorkCarousel() {
 
   const handlePointerUp = (e: React.PointerEvent) => {
     if (!isDragging.current) return;
+    requestRenderRef.current();
     isDragging.current = false;
 
     try {
@@ -317,6 +354,7 @@ export default function WorkCarousel() {
   };
 
   const handlePointerCancel = (e: React.PointerEvent) => {
+    requestRenderRef.current();
     try {
       if ((e.currentTarget as HTMLElement).hasPointerCapture(e.pointerId)) {
         (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
@@ -332,6 +370,7 @@ export default function WorkCarousel() {
   };
 
   const handlePointerLeave = (e: React.PointerEvent) => {
+    requestRenderRef.current();
     if (isDragging.current && !stageRef.current?.hasPointerCapture?.(e.pointerId)) {
       isDragging.current = false;
       targetRef.current = Math.round(targetRef.current);
@@ -342,6 +381,7 @@ export default function WorkCarousel() {
   };
 
   const selectCard = (index: number) => {
+    requestRenderRef.current();
     const N = projects.length;
     const currentRounded = Math.round(targetRef.current);
 
@@ -362,7 +402,7 @@ export default function WorkCarousel() {
     <div className="relative w-full h-[100dvh] min-h-[750px] flex flex-col items-center justify-center overflow-hidden">
       <div
         ref={stageRef}
-        className="stage relative w-full h-[400px] touch-none isolate -mt-8 md:-mt-12 select-none"
+        className="stage relative w-full h-[400px] touch-pan-y isolate -mt-8 md:-mt-12 select-none"
         style={{ perspective: "1450px" }}
         onWheel={handleWheel}
         onPointerDown={handlePointerDown}
@@ -389,7 +429,7 @@ export default function WorkCarousel() {
               className="card group absolute top-1/2 left-1/2 -mt-[200px] -ml-[140px] w-[280px] md:w-[320px] md:-ml-[160px] aspect-[3/4] cursor-pointer select-none"
               style={{
                 transformStyle: "preserve-3d",
-                willChange: "transform, opacity",
+                visibility: i === 0 ? "visible" : "hidden",
                 WebkitBoxReflect: "below 2px linear-gradient(transparent 60%, rgba(0,0,0,0.5) 100%)",
               }}
             >
@@ -423,7 +463,7 @@ export default function WorkCarousel() {
                   fill
                   draggable={false}
                   className="object-cover select-none pointer-events-none"
-                  sizes="(max-width: 768px) 100vw, 50vw"
+                  sizes="(max-width: 767px) 342px, 391px"
                   style={{
                     filter:
                       "brightness(calc(0.35 + var(--focus) * 0.65)) contrast(calc(0.92 + var(--focus) * 0.12)) saturate(calc(0.6 + var(--focus) * 0.4))",

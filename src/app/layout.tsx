@@ -1,27 +1,34 @@
 import type { Metadata } from "next";
-import { Inter, Geist_Mono, Playfair_Display, Pacifico } from "next/font/google";
+import localFont from "next/font/local";
 import SmoothScroll from "@/components/SmoothScroll";
 import Preloader from "@/components/Preloader";
 import "./globals.css";
 
-const inter = Inter({
+const inter = localFont({
+  src: "./fonts/inter-latin.woff2",
+  weight: "100 900",
   variable: "--font-inter",
-  subsets: ["latin"],
+  display: "swap",
 });
 
-const playfairDisplay = Playfair_Display({
+const playfairDisplay = localFont({
+  src: "./fonts/playfair-display-latin.woff2",
+  weight: "400 900",
   variable: "--font-playfair",
-  subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: "./fonts/geist-mono-latin.woff2",
+  weight: "100 900",
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
-const pacifico = Pacifico({
+const pacifico = localFont({
+  src: "./fonts/pacifico-latin.woff2",
   variable: "--font-signature",
-  subsets: ["latin"],
+  display: "swap",
   weight: "400",
 });
 
@@ -49,6 +56,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-page-covered="true"
+      data-hero3d-status="pending"
       className={`${inter.variable} ${playfairDisplay.variable} ${geistMono.variable} ${pacifico.variable} h-full antialiased`}
     >
       <head>

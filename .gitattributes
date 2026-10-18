@@ -1,0 +1,22 @@
+# Consistent source line endings on Windows, macOS and Linux.
+* text=auto
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.svg text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Keep site assets byte-for-byte intact.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.hdr binary
+*.woff2 binary
+*.pdf binary

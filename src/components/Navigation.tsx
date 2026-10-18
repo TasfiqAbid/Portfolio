@@ -7,7 +7,7 @@ function Logo() {
   return (
     <a
       href="#home"
-      className="text-3xl text-white transition-opacity hover:opacity-80 pb-1 pr-5"
+      className="block pb-1 text-3xl text-white transition-opacity hover:opacity-80"
       style={{ fontFamily: "var(--font-signature), cursive" }}
     >
       Gta
@@ -22,34 +22,37 @@ export default function Navigation() {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
+      const aboutStage = document.getElementById("about-stage");
+      const aboutBounds = aboutStage?.getBoundingClientRect();
+      // The About content is pinned, so the section itself is not a reliable
+      // IntersectionObserver target while the story is playing.
+      if (aboutBounds && aboutBounds.top < window.innerHeight * 0.72 && aboutBounds.bottom > window.innerHeight * 0.28) {
+        setActive("About");
+        return;
+      }
+
+      const midpoint = window.innerHeight / 2;
+      const current = navLinks.find((link) => {
+        const section = document.querySelector<HTMLElement>(link.href);
+        if (!section) return false;
+        const bounds = section.getBoundingClientRect();
+        return bounds.top <= midpoint && bounds.bottom >= midpoint;
+      });
+      if (current) setActive(current.label);
     };
     window.addEventListener("scroll", handleScroll);
+    const handleNavigate = (event: Event) => {
+      const href = (event as CustomEvent<{ href?: string }>).detail?.href;
+      const match = navLinks.find((link) => link.href === href);
+      if (match) setActive(match.label);
+    };
+    window.addEventListener("portfolio:navigate", handleNavigate);
 
-    const sections = navLinks.map((l) => ({
-      id: l.href.replace("#", ""),
-      label: l.label,
-    }));
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const match = sections.find((s) => s.id === entry.target.id);
-            if (match) setActive(match.label);
-          }
-        });
-      },
-      { threshold: 0.4 },
-    );
-
-    sections.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    handleScroll();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      observer.disconnect();
+      window.removeEventListener("portfolio:navigate", handleNavigate);
     };
   }, []);
 
@@ -57,17 +60,18 @@ export default function Navigation() {
     <header className="fixed left-0 right-0 top-6 z-50 flex justify-center px-6">
       <nav
         id="main-nav"
-        className={`relative flex w-full max-w-4xl items-center justify-between rounded-full px-8 py-3 transition-all duration-500 ${
+        className={`relative grid w-full max-w-4xl grid-cols-[1fr_auto] items-center gap-x-6 rounded-full px-6 py-3 transition-all duration-500 md:grid-cols-[auto_minmax(0,1fr)_auto] md:px-8 ${
           scrolled
             ? "border border-white/10 bg-black/40 shadow-2xl shadow-black/20 backdrop-blur-xl"
             : "border border-transparent bg-transparent"
         }`}
       >
-        <div className="flex flex-1 items-center justify-start">
+        <div className="flex items-center justify-start">
           <Logo />
         </div>
 
-        <ul className="hidden items-center justify-center gap-8 md:flex">
+        {/* Half the CTA's 20px text inset balances the visible text gaps. */}
+        <ul className="hidden min-w-0 translate-x-2.5 items-center justify-center gap-5 md:flex lg:gap-8">
           {navLinks.map((link) => (
             <li key={link.label}>
               <a
@@ -93,7 +97,7 @@ export default function Navigation() {
           ))}
         </ul>
 
-        <div className="flex flex-1 items-center justify-end">
+        <div className="flex items-center justify-end">
           <a
             href="#contact"
             className="group/btn relative flex items-center justify-center overflow-hidden rounded-full border border-white/20 bg-white/5 px-5 py-2.5 text-xs font-semibold tracking-widest text-white uppercase backdrop-blur-md transition-all duration-300 hover:border-orange hover:bg-orange hover:text-black hover:shadow-[0_0_15px_rgba(245,166,35,0.4)]"

@@ -1,0 +1,39 @@
+.curtain,
+.text {
+  will-change: transform, opacity;
+}
+
+.fillClipper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  will-change: clip-path;
+  animation: liquidReveal 2.6s linear both;
+}
+
+/* A restrained, softly moving waterline fills the lettering. */
+@keyframes liquidReveal {
+  0% {
+    clip-path: polygon(0 108%, 12% 108%, 25% 108%, 38% 108%, 50% 108%, 62% 108%, 75% 108%, 88% 108%, 100% 108%, 100% 100%, 0 100%);
+  }
+  25% {
+    clip-path: polygon(0 82%, 12% 79%, 25% 81%, 38% 85%, 50% 87%, 62% 85%, 75% 81%, 88% 79%, 100% 82%, 100% 100%, 0 100%);
+  }
+  50% {
+    clip-path: polygon(0 52%, 12% 55%, 25% 59%, 38% 61%, 50% 58%, 62% 53%, 75% 50%, 88% 54%, 100% 58%, 100% 100%, 0 100%);
+  }
+  75% {
+    clip-path: polygon(0 27%, 12% 24%, 25% 26%, 38% 30%, 50% 32%, 62% 30%, 75% 26%, 88% 24%, 100% 27%, 100% 100%, 0 100%);
+  }
+  100% {
+    clip-path: polygon(0 -12%, 12% -9%, 25% -7%, 38% -9%, 50% -13%, 62% -15%, 75% -12%, 88% -8%, 100% -10%, 100% 100%, 0 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fillClipper {
+    animation: none;
+    clip-path: none;
+    will-change: auto;
+  }
+}

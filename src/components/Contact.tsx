@@ -6,18 +6,18 @@ export default function Contact() {
         className="relative flex min-h-screen flex-col items-center justify-between pt-32 pb-6 px-6 md:px-12 lg:px-20"
       >
         <div className="flex flex-col items-center justify-center flex-1 w-full max-w-7xl text-center">
-          <p className="text-xs font-medium tracking-[0.25em] text-grey uppercase">
-            Get in touch
-          </p>
-          <h2 className="mt-4 font-display text-[clamp(3.5rem,10vw,7rem)] leading-none font-semibold tracking-tighter text-black capitalize">
-            Let&apos;s build
-            <br />
-            <span className="font-serif italic font-normal text-black/80">your </span>
-            <span className="font-serif italic font-normal text-orange">vision</span>
-          </h2>
-          <p className="mx-auto mt-6 max-w-md text-base text-[#555]">
-            Have a project in mind? I&apos;d love to hear about it.
-          </p>
+          <header className="section-heading">
+            <p className="section-eyebrow text-grey">
+              Get in touch
+            </p>
+            <h2 className="section-title text-black">
+              Let&apos;s build{" "}
+              <em className="whitespace-nowrap">your <span className="text-orange">vision</span></em>
+            </h2>
+            <p className="section-description mx-auto max-w-md text-[#555]">
+              Have a project in mind? I&apos;d love to hear about it.
+            </p>
+          </header>
 
           <a
             href="https://mail.google.com/mail/?view=cm&fs=1&to=abidtasfiq6@gmail.com&su=Project+Inquiry+—+Let's+Work+Together"

@@ -1,0 +1,27 @@
+.word { position: relative; display: inline-block; white-space: nowrap; }
+.eye { position: relative; display: inline-block; line-height: 1; }
+.shape { position: relative; display: block; transform-origin: 50% .59em; }
+.sclera {
+  position: absolute; left: calc(50% + .025em); top: .59em;
+  width: .48em; height: .5em;
+  transform: translate(-50%, -50%);
+  border-radius: 50%; overflow: hidden;
+  background: currentColor; opacity: 0;
+  transition: opacity .2s ease;
+  pointer-events: none;
+}
+.word[data-awake="true"] .sclera { opacity: 1; }
+.pupil {
+  position: absolute; left: 50%; top: 50%;
+  width: .25em; height: .25em; border-radius: 50%;
+  background: #0a0a0a;
+  transform: translate(calc(-50% + var(--look-x, 0px)), calc(-50% + var(--look-y, 0px)));
+  transition: transform .16s cubic-bezier(.2, .7, .3, 1);
+}
+.pupil::after {
+  content: ""; position: absolute; left: 20%; top: 18%;
+  width: 24%; height: 24%; border-radius: 50%; background: #fffaf0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sclera, .pupil { transition: none; }
+}

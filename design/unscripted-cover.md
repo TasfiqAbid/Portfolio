@@ -1,0 +1,15 @@
+# Unscripted cover — current version
+
+Asset: `public/work/unscripted-cover.webp`, 1536x1024, 216802 bytes, WebP quality 92. Next Image serves responsive variants at quality 90. The card uses the asset's landscape 3:2 ratio on desktop and mobile. Its former HTML title overlay was removed because the title is now part of the cover artwork. The same artwork opens in the fullscreen preview and archive.
+
+The user supplied the street photograph of two boys beside a road as the photo reference, and a second image as the typography/layout reference. The built-in imagegen edit used both conversation images to create a photo-based cover with black upright serif title/subtitle and a light upper-left background wash. The lower descriptive paragraph and underline are omitted. This is an AI-assisted edit, not a byte-identical copy of the source photograph.
+
+Project title: **Unscripted | Street & Documentary Photography**.
+
+Destination: https://www.behance.net/gallery/145883667/Street-Photography
+
+Tool: built-in `image_gen` through the imagegen skill, editing with the two recent conversation images; no CLI fallback. Original generated output is retained at `(local generation history; excluded from Git)`. The earlier street-photography concept is retained only in the ignored `.local-archive/public/work/` directory.
+
+## Final prompt
+
+Use case: text-localization / precise-object-edit. Create the final website project thumbnail by EDITING IMAGE 1, the original landscape street photograph of the smiling boy sitting behind a boy lying across sacks beside a roadside wall. IMAGE 1 is the actual photograph to use. IMAGE 2 is ONLY a typography/layout reference. Preserve IMAGE 1's exact people, their facial identity and expressions, clothes, body poses, wall, sacks, footwear, street, trees, light, color, photographic composition and 3:2 landscape aspect ratio. Do not replace the children with those in image 2. Do not regenerate the subjects, beautify faces, add or remove subjects, change architecture, invent details, or crop away the shoes/subjects. Only add the typography and a restrained soft ivory mist/lightening over the upper-left BACKGROUND area to support readable black letters; keep the actual subjects visually untouched. Match the elegant black high-contrast upright editorial serif typography of IMAGE 2. Text verbatim, large main title: 'Unscripted'. Immediately beneath it in smaller upright serif on two lines: 'Street & Documentary' then 'Photography'. Place this text in the upper-left, with generous left padding and enough quiet space above the reclining boy's face. Keep the title on one line and ensure none of the lettering covers either child's face. The title/subtitle block should occupy approximately the left 46% of the image. No paragraph, no description text, no rule/underline beneath the subtitle, no logo, no border, no other text. Maintain a clean natural editorial photographic result, full bleed, landscape 3:2, crisp text and image details. The visual goal is IMAGE 1 as the photo with IMAGE 2's title styling, removing the entire lower descriptive paragraph.

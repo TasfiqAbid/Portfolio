@@ -1,0 +1,80 @@
+.ambient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 58% 56% at -8% 30%,
+      rgb(245 166 35 / .23) 0%, rgb(245 166 35 / .20) 16%,
+      rgb(245 166 35 / .15) 32%, rgb(245 166 35 / .09) 48%,
+      rgb(245 166 35 / .043) 64%, rgb(245 166 35 / .013) 80%,
+      rgb(245 166 35 / 0) 100%),
+    radial-gradient(ellipse 60% 62% at 108% 35%,
+      rgb(245 166 35 / .19) 0%, rgb(245 166 35 / .16) 16%,
+      rgb(245 166 35 / .12) 32%, rgb(245 166 35 / .073) 48%,
+      rgb(245 166 35 / .035) 64%, rgb(245 166 35 / .01) 80%,
+      rgb(245 166 35 / 0) 100%),
+    radial-gradient(ellipse 48% 34% at 10% 100%,
+      rgb(245 166 35 / .1) 0%, rgb(245 166 35 / .07) 24%,
+      rgb(245 166 35 / .035) 48%, rgb(245 166 35 / .01) 72%,
+      rgb(245 166 35 / 0) 100%);
+  mask-image: linear-gradient(to bottom, transparent, #000 20%, #000 78%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 20%, #000 78%, transparent);
+}
+
+.titleGroup {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 1.8vw, 26px);
+  max-width: 100%;
+}
+
+.title { color: #e8ba6a; }
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .title {
+    background-image: linear-gradient(115deg,
+      #bb873b 0%, #e8ba6a 22%, #fff0be 43%,
+      #d5a14d 56%, #f2ce8b 76%, #bd8b41 100%);
+    background-size: 150% 100%;
+    background-position: 25% 50%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+}
+
+.accent {
+  display: block;
+  width: clamp(30px, 4.2vw, 58px);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.branch {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: .85;
+  transform-origin: 60% 94%;
+  transition: transform .65s cubic-bezier(.34, 1.4, .64, 1), opacity .4s;
+}
+
+.mirrored { transform: scaleX(-1); }
+
+@media (hover: hover) and (pointer: fine) {
+  .titleGroup:hover .branch {
+    transform: translateX(-3px) rotate(-5deg) scale(1.03);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 639px) {
+  .accent { width: 27px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .branch { transition: none; }
+  .titleGroup:hover .branch { transform: none; }
+}

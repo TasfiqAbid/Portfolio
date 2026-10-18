@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Hero3DObject from "./Hero3DObject";
@@ -51,11 +51,22 @@ export default function Hero() {
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollLineRef = useRef<HTMLDivElement>(null);
   const cursorGlowRef = useRef<HTMLDivElement>(null);
+  const [sceneMounted, setSceneMounted] = useState(false);
+
+  useEffect(() => {
+    // Context creation/texture upload can stall the GPU too. Mount only after
+    // the compositor has finished the moving fill, underneath the filled logo.
+    const mountScene = () => setSceneMounted(true);
+    window.addEventListener("portfolio:intro-filled", mountScene);
+    if (document.documentElement.dataset.introFilled === "true") mountScene();
+    return () => window.removeEventListener("portfolio:intro-filled", mountScene);
+  }, []);
 
   useEffect(() => {
     if (!contentRef.current) return;
 
     let handleMouseMove: (e: MouseEvent) => void;
+    let pointerFrame: number | null = null;
 
     const ctx = gsap.context(() => {
       // Set initial state completely off-screen to the right with force3D
@@ -67,7 +78,7 @@ export default function Hero() {
           trigger: sectionRef.current,
           start: "top top",
           end: "+=280%", // Ample runway for silky smooth pace
-          scrub: 1.0,    // Silky smooth scrub damping: blends wheel ticks into a continuous glide
+          scrub: 0.35,
           pin: true,     // Pin the section
           refreshPriority: 1,
         },
@@ -108,6 +119,12 @@ export default function Hero() {
             duration: 1.5,
             repeat: -1,
             ease: "circ.inOut",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              toggleActions: "play pause resume pause",
+            },
           }
         );
       }
@@ -118,20 +135,26 @@ export default function Hero() {
           y: typeof window !== "undefined" ? window.innerHeight / 2 : 0,
         });
 
-        const xTo = gsap.quickTo(cursorGlowRef.current, "x", { duration: 0.6, ease: "power3" });
-        const yTo = gsap.quickTo(cursorGlowRef.current, "y", { duration: 0.6, ease: "power3" });
+        const xTo = gsap.quickTo(cursorGlowRef.current, "x", { duration: 0.35, ease: "power3" });
+        const yTo = gsap.quickTo(cursorGlowRef.current, "y", { duration: 0.35, ease: "power3" });
+        let pointerX = 0;
+        let pointerY = 0;
 
         handleMouseMove = (e: MouseEvent) => {
-          if (!sectionRef.current) return;
-          const rect = sectionRef.current.getBoundingClientRect();
-          // Only track if mouse is within the Hero section vertically
-          if (e.clientY <= rect.bottom && e.clientY >= rect.top) {
-            xTo(e.clientX - rect.left);
-            yTo(e.clientY - rect.top);
-          }
+          // The hero is pinned to the viewport. Read pointer coordinates only;
+          // measuring its animated layout on each input forces style resolution.
+          if (window.scrollY > window.innerHeight * 2.8) return;
+          pointerX = e.clientX;
+          pointerY = e.clientY;
+          if (pointerFrame !== null) return;
+          pointerFrame = requestAnimationFrame(() => {
+            pointerFrame = null;
+            xTo(pointerX);
+            yTo(pointerY);
+          });
         };
 
-        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("mousemove", handleMouseMove, { passive: true });
       }
     });
 
@@ -139,6 +162,7 @@ export default function Hero() {
       if (handleMouseMove) {
         window.removeEventListener("mousemove", handleMouseMove);
       }
+      if (pointerFrame !== null) cancelAnimationFrame(pointerFrame);
       ctx.revert();
     };
   }, []);
@@ -155,11 +179,11 @@ export default function Hero() {
 
         <div
           ref={cursorGlowRef}
-          className="absolute left-0 top-0 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-orange/15 blur-[100px] transform-gpu"
+          className="hero-cursor-glow absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 will-change-transform"
         />
 
-        <Hero3DObject />
       </div>
+      {sceneMounted && <Hero3DObject />}
 
       <div ref={contentRef} className="relative z-10 flex flex-col items-center text-center opacity-0 translate-x-[100vw] will-change-transform will-change-opacity transform-gpu">
         <p className="mb-4 text-xs font-bold tracking-[0.25em] text-black uppercase">
